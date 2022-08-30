@@ -11,7 +11,7 @@ import javax.persistence.Id;
 @Entity
 public class Person implements Serializable{
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
@@ -89,11 +89,5 @@ public class Person implements Serializable{
 		return Objects.equals(cpf, other.cpf) && Objects.equals(email, other.email) && Objects.equals(id, other.id)
 				&& Objects.equals(name, other.name);
 	}
-	
-	
-	
-	
-	
-	
 
 }
