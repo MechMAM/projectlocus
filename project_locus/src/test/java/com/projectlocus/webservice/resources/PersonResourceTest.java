@@ -16,7 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.projectlocus.webservice.entities.Person;
-import com.projectlocus.webservice.service.PersonService;
+import com.projectlocus.webservice.services.PersonService;
 
 @ExtendWith(MockitoExtension.class)
 public class PersonResourceTest {
@@ -26,8 +26,7 @@ public class PersonResourceTest {
 	
 	@Mock
 	private PersonService service;
-	
-		
+			
 	@Test
 	@DisplayName("Teste do endpoint findAll")
 	public void testFindAll() {
@@ -37,8 +36,8 @@ public class PersonResourceTest {
 		List<Person> pList = new ArrayList<Person>();
 		Collections.addAll(pList, p1,p2);
 		
-		
 		Mockito.when(service.findAll()).thenReturn(pList);
+		
 		
 		ResponseEntity<List<Person>> personsList = resource.findAll();
 		Assertions.assertEquals(pList, personsList.getBody());

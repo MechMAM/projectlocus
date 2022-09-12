@@ -1,4 +1,4 @@
-package com.projectlocus.webservice.service;
+package com.projectlocus.webservice.services;
 
 import java.util.List;
 

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.projectlocus.webservice.entities.Person;
-import com.projectlocus.webservice.service.PersonService;
+import com.projectlocus.webservice.services.PersonService;
 
 @RestController
 @RequestMapping(value = "/persons")
