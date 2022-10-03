@@ -8,20 +8,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.projectlocus.webservice.entities.Person;
-import com.projectlocus.webservice.services.PersonService;
+import com.projectlocus.webservice.entities.Space;
+import com.projectlocus.webservice.services.SpaceService;
 
 @RestController
-@RequestMapping(value = "/persons")
-public class PersonResource {
+@RequestMapping(value = "/spaces")
+public class SpaceResource {
 	
-	@Autowired
-	private PersonService service;
+ 	@Autowired
+	private SpaceService service;
 	
 	@GetMapping
-	public ResponseEntity<List<Person>> findAll(){
-		List<Person> persons = service.findAll();
-		return ResponseEntity.ok().body(persons);
+	public ResponseEntity<List<Space>> findAll(){
+		List<Space> spaces = service.findAll();
+		return ResponseEntity.ok().body(spaces);
 	}
 
 }
