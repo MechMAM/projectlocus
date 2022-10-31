@@ -1,13 +1,18 @@
 package com.projectlocus.webservice.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tb_space")
@@ -17,21 +22,26 @@ public class Space implements Serializable{
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
+	
 	private String propertyName;
 	private String spaceName;
 	private int capacity;
 	private double area;
-//	private List<Integer> differentialsList = new ArrayList<Integer>();
-//	private List<Integer> purposesList = new ArrayList<Integer>();
-////	private List<Integer> acessibilityResources = new ArrayList<Integer>();
-//	private List<Integer> includedServices = new ArrayList<Integer>();
-//	private List<Integer> additionalServices = new ArrayList<Integer>();
+//	private Set<Integer> differentialsList = new HashSet<>();
+//	private Set<Integer> purposesList = new HashSet<>();
+//	private Set<Integer> acessibilityResources = new HashSet<>();
+//	private Set<Integer> includedServices = new HashSet<>();
+//	private Set<Integer> additionalServices = new HashSet<>();
 	private int cleaningTime;
 	private double cleaningPrice;
 	private double hourlyReservationPrice;
 	private int discountPercentage;
 	private String spaceDescription;
 	private String surroundingsAdvantages;
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "space")
+	private List<Booking> spaceBookings = new ArrayList<>();
 	
 	public Space() {
 	}
@@ -91,43 +101,43 @@ public class Space implements Serializable{
 		this.area = area;
 	}
 
-//	public List<Integer> getDifferentialsList() {
+//	public Set<Integer> getDifferentialsList() {
 //		return differentialsList;
 //	}
 //
-//	public void setDifferentialsList(List<Integer> differentialsList) {
+//	public void setDifferentialsList(Set<Integer> differentialsList) {
 //		this.differentialsList = differentialsList;
 //	}
 //
-//	public List<Integer> getPurposesList() {
+//	public Set<Integer> getPurposesList() {
 //		return purposesList;
 //	}
 //
-//	public void setPurposesList(List<Integer> purposesList) {
+//	public void setPurposesList(Set<Integer> purposesList) {
 //		this.purposesList = purposesList;
 //	}
-
-//	public List<Integer> getAcessibilityResources() {
+//
+//	public Set<Integer> getAcessibilityResources() {
 //		return acessibilityResources;
 //	}
 //
-//	public void setAcessibilityResources(List<Integer> acessibilityResources) {
+//	public void setAcessibilityResources(Set<Integer> acessibilityResources) {
 //		this.acessibilityResources = acessibilityResources;
 //	}
-
-//	public List<Integer> getIncludedServices() {
+//
+//	public Set<Integer> getIncludedServices() {
 //		return includedServices;
 //	}
 //
-//	public void setIncludedServices(List<Integer> includedServices) {
+//	public void setIncludedServices(Set<Integer> includedServices) {
 //		this.includedServices = includedServices;
 //	}
 //
-//	public List<Integer> getAdditionalServices() {
+//	public Set<Integer> getAdditionalServices() {
 //		return additionalServices;
 //	}
-
-//	public void setAdditionalServices(List<Integer> additionalServices) {
+//
+//	public void setAdditionalServices(Set<Integer> additionalServices) {
 //		this.additionalServices = additionalServices;
 //	}
 
@@ -177,6 +187,14 @@ public class Space implements Serializable{
 
 	public void setSurroundingsAdvantages(String surroundingsAdvantages) {
 		this.surroundingsAdvantages = surroundingsAdvantages;
+	}
+	
+	public List<Booking> getSpaceBookings() {
+		return spaceBookings;
+	}
+
+	public void setSpaceBookings(List<Booking> spaceBookings) {
+		this.spaceBookings = spaceBookings;
 	}
 
 	@Override
