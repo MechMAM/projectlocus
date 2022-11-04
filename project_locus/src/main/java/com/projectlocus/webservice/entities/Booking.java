@@ -2,7 +2,6 @@ package com.projectlocus.webservice.entities;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Calendar;
 import java.util.Objects;
 
 import javax.persistence.Entity;
@@ -12,8 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -26,11 +23,14 @@ public class Booking implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "uuuu-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
 	private Instant moment;
 	
-	@Temporal(TemporalType.TIMESTAMP)
-	private Calendar date;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "uuuu-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
+	private Instant startDate;
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "uuuu-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
+	private Instant endDate;	
 	
 	@ManyToOne
 	@JoinColumn(name = "client_id")
@@ -43,14 +43,16 @@ public class Booking implements Serializable{
 	public Booking() {
 	}
 	
-	public Booking(Long id, Instant moment, Calendar date, Person client, Space space) {
+	public Booking(Long id, Instant startDate, Instant endDate, Person client, Space space) {
 		super();
 		this.id = id;
-		this.moment = moment;
-		this.date = date;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		this.client = client;
 		this.space = space;
 	}
+
+
 
 	public Long getId() {
 		return id;
@@ -68,12 +70,20 @@ public class Booking implements Serializable{
 		this.moment = moment;
 	}
 
-	public Calendar getDate() {
-		return date;
+	public Instant getStartDate() {
+		return startDate;
 	}
 
-	public void setDate(Calendar date) {
-		this.date = date;
+	public void setStartDate(Instant startDate) {
+		this.startDate = startDate;
+	}
+
+	public Instant getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Instant endDate) {
+		this.endDate = endDate;
 	}
 
 	public Person getClient() {

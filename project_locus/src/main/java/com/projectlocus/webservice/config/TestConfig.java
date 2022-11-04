@@ -2,7 +2,6 @@ package com.projectlocus.webservice.config;
 
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Calendar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -43,12 +42,12 @@ public class TestConfig implements CommandLineRunner{
 		
 		spaceRepository.saveAll(Arrays.asList(s1,s2));
 		
-		Calendar c1 = Calendar.getInstance();
+		Booking b1 = new Booking(null,Instant.parse("2023-01-20T08:30:00Z"),Instant.parse("2023-01-20T17:30:00Z"),p1,s1);
+		b1.setMoment(Instant.now());
 				
-		Booking b1 = new Booking(null,Instant.now(),c1,p1,s1);
+		Booking b2 = new Booking(null,Instant.parse("2023-03-25T08:30:00Z"),Instant.parse("2023-03-25T12:30:00Z"),p2,s2);
+		b2.setMoment(Instant.now());
 		
-		c1.set(2023, 01, 25);
-		Booking b2 = new Booking(null,Instant.now(),c1,p2,s2);
 		
 		bookingRepository.saveAll(Arrays.asList(b1,b2));
 		

@@ -38,7 +38,7 @@ public class BookingResource {
 	}
 	
 	@PostMapping
-	public ResponseEntity<Booking> insert(@RequestBody Booking obj){
+	public ResponseEntity<Booking> insert(@RequestBody Booking obj) throws Exception{
 		obj = service.insert(obj);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
 		return ResponseEntity.created(uri).body(obj);
