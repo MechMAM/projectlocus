@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.projectlocus.webservice.entities.Booking;
 import com.projectlocus.webservice.repositories.BookingRepository;
+import com.projectlocus.webservice.services.exceptions.BookingDateException;
 import com.projectlocus.webservice.services.exceptions.DatabaseException;
 import com.projectlocus.webservice.services.exceptions.ResourceNotFoundException;
 
@@ -31,34 +32,35 @@ public class BookingService {
 		return obj.orElseThrow(() -> new ResourceNotFoundException(id));
 	}
 
-	public Booking insert(Booking obj) throws Exception {
+	public Booking insert(Booking obj) {
 		try {
 			obj.setMoment(Instant.now());
+			checkDates(obj);
 			checkAvailability(obj);
 			return repository.save(obj);
-		} catch (Exception e) {
-			throw new Exception("Não foi possível inserir a reserva");
+		} catch (BookingDateException e) {
+			throw new BookingDateException("Não foi possível inserir a reserva: " + e.getMessage());
 		}
 	}
 
-	private void checkAvailability(Booking obj) throws Exception {
+	public void checkDates(Booking obj) {
 		try {
-			if (obj.getStartDate().compareTo(obj.getEndDate()) > 0 || obj.getStartDate().equals(null)
-					|| obj.getEndDate().equals(null)) {
-				throw new Exception("Data de início deve ser maior que a data fim e as datas devem ser válidas");
+			if (obj.getStartDate().compareTo(obj.getEndDate()) > 0) {
+				throw new BookingDateException("Data de início deve ser menor que data fim");
 			}
-			boolean available = true;			
-			for (Booking spaceBooking : obj.getSpace().getSpaceBookings()) {
-				if (spaceBooking.getStartDate().compareTo(obj.getEndDate()) < 0
-						&& spaceBooking.getEndDate().compareTo(obj.getStartDate()) > 0) {
-					available = false;
-				}		
-			}			
-			if (!available) {
-				throw new Exception("Não há disponibilidade para a data selecionada");
+		} catch (NullPointerException e) {
+			throw new BookingDateException("Datas não devem ser nulas");
+		}
+	}
+
+	public void checkAvailability(Booking obj) {
+		for (Booking spaceBooking : obj.getSpace().getSpaceBookings()) {
+			if ((spaceBooking.getStartDate().compareTo(obj.getEndDate()) <= 0
+					&& spaceBooking.getStartDate().compareTo(obj.getStartDate()) >= 0)
+					|| (spaceBooking.getEndDate().compareTo(obj.getEndDate()) <= 0
+							&& spaceBooking.getEndDate().compareTo(obj.getStartDate()) >= 0)) {
+				throw new BookingDateException("Não há disponibilidade para a data selecionada");
 			}
-		} catch (Exception e) {
-			throw new Exception(e.getMessage());
 		}
 	}
 
