@@ -1,4 +1,4 @@
-package com.projectlocus.webservice.enums.space;
+package com.projectlocus.webservice.entities.enums.space;
 
 public enum Purposes {
 	

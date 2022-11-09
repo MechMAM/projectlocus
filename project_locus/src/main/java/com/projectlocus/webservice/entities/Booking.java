@@ -32,6 +32,8 @@ public class Booking implements Serializable{
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "uuuu-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
 	private Instant endDate;	
 	
+	private double bookingPrice;
+	
 	@ManyToOne
 	@JoinColumn(name = "client_id")
 	private Person client;
@@ -51,8 +53,6 @@ public class Booking implements Serializable{
 		this.client = client;
 		this.space = space;
 	}
-
-
 
 	public Long getId() {
 		return id;
@@ -84,6 +84,14 @@ public class Booking implements Serializable{
 
 	public void setEndDate(Instant endDate) {
 		this.endDate = endDate;
+	}
+	
+	public double getBookingPrice() {
+		return bookingPrice;
+	}
+
+	public void setBookingPrice(double bookingPrice) {
+		this.bookingPrice = bookingPrice;
 	}
 
 	public Person getClient() {

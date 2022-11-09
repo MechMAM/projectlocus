@@ -1,9 +1,11 @@
 package com.projectlocus.webservice.services;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -47,6 +49,11 @@ public class BookingServiceTest {
 	private static Booking booking4 = new Booking(4L, Instant.parse("2022-12-25T08:30:00Z"),
 			Instant.parse("2022-12-25T12:30:00Z"), person2, space2);
 
+	private static Optional<Booking> booking5 = Optional.of(new Booking(5L, Instant.parse("2022-12-25T08:30:00Z"),
+			Instant.parse("2022-12-25T12:30:00Z"), person2, space1));
+
+	private static List<Booking> spaceList5 = new ArrayList<Booking>();
+
 	@Test
 	@BeforeAll
 	static public void initTest() {
@@ -64,6 +71,8 @@ public class BookingServiceTest {
 		Collections.addAll(spaceList3, booking1, booking2, booking3);
 		List<Booking> spaceList4 = new ArrayList<Booking>();
 		spaceList4.add(booking4);
+
+		Collections.addAll(spaceList5, booking1, booking2, booking3, booking4);
 
 		space1.setSpaceBookings(spaceList1);
 		space2.setSpaceBookings(spaceList2);
@@ -85,10 +94,14 @@ public class BookingServiceTest {
 		Booking bookingTest3 = new Booking(null, Instant.parse("2023-01-20T08:30:00Z"),
 				Instant.parse("2023-01-20T12:30:00Z"), person1, space1);
 
+		Booking bookingTest4 = new Booking(null, Instant.parse("2022-12-25T12:35:00Z"),
+				Instant.parse("2022-12-25T17:30:00Z"), person1, space2);
+
 		BookingDateException expected1 = new BookingDateException("Não há disponibilidade para a data selecionada");
 		BookingDateException thrown1 = new BookingDateException("");
 		BookingDateException thrown2 = new BookingDateException("");
 		BookingDateException thrown3 = new BookingDateException("");
+		BookingDateException thrown4 = new BookingDateException("");
 
 		try {
 			bookingService.checkAvailability(bookingTest1);
@@ -108,9 +121,16 @@ public class BookingServiceTest {
 			thrown3 = e;
 		}
 
+		try {
+			bookingService.checkAvailability(bookingTest4);
+		} catch (BookingDateException e) {
+			thrown4 = e;
+		}
+
 		Assertions.assertEquals(expected1.getMessage(), thrown1.getMessage());
 		Assertions.assertEquals(expected1.getMessage(), thrown2.getMessage());
 		Assertions.assertEquals(expected1.getMessage(), thrown3.getMessage());
+		Assertions.assertEquals(expected1.getMessage(), thrown4.getMessage());
 	}
 
 	@Test
@@ -142,17 +162,32 @@ public class BookingServiceTest {
 		Assertions.assertEquals(expected1.getMessage(), thrown1.getMessage());
 		Assertions.assertEquals(expected2.getMessage(), thrown2.getMessage());
 	}
-	
+
+	@Test
+	@DisplayName("Teste para verificar o cálculo do preço da reserva")
+	public void evaluateBookingPriceTest() {
+		Booking bookingTest1 = new Booking(null, Instant.parse("2022-11-20T09:30:00Z"),
+				Instant.parse("2022-11-20T10:30:00Z"), person2, space2);
+		double bookingDuration = ChronoUnit.HOURS.between(bookingTest1.getStartDate(), bookingTest1.getEndDate());
+		double expectedPrice = space2.getHourlyReservationPrice() * bookingDuration + space2.getCleaningPrice();
+
+		bookingService.evaluateBookingPrice(bookingTest1);
+
+		Assertions.assertEquals(expectedPrice, bookingTest1.getBookingPrice());
+
+	}
+
 	@Test
 	@DisplayName("Teste para inserir uma reserva no banco")
 	public void insertTest() {
-		
+
 		Booking bookingTest1 = new Booking(null, Instant.parse("2022-11-20T09:30:00Z"),
 				Instant.parse("2022-11-20T10:30:00Z"), person2, space2);
 		Booking bookingTest2 = new Booking(null, null, null, person1, space2);
 		Booking savedBooking = new Booking();
-		
-		BookingDateException expected1 = new BookingDateException("Não foi possível inserir a reserva: Datas não devem ser nulas");
+
+		BookingDateException expected1 = new BookingDateException(
+				"Não foi possível inserir a reserva: Datas não devem ser nulas");
 		BookingDateException thrown1 = new BookingDateException("");
 
 		try {
@@ -160,17 +195,35 @@ public class BookingServiceTest {
 		} catch (BookingDateException e) {
 			thrown1 = e;
 		}
-		
+
 		Mockito.when(bookingRepository.save(bookingTest1)).thenReturn(bookingTest1);
-		
+
 		try {
 			savedBooking = bookingService.insert(bookingTest1);
 		} catch (BookingDateException e) {
 			e.printStackTrace();
 		}
-		
+
 		Assertions.assertEquals(bookingTest1, savedBooking);
-		Assertions.assertEquals(expected1.getMessage(),thrown1.getMessage());
+		Assertions.assertEquals(expected1.getMessage(), thrown1.getMessage());
 	}
+
+	@Test
+	@DisplayName("Teste do método findAll de reservas")
+	public void findAllTest() {
+		Mockito.when(bookingRepository.findAll()).thenReturn(spaceList5);
+
+		Assertions.assertEquals(spaceList5, bookingService.findAll());
+
+	}
+
+	@Test
+	@DisplayName("Teste do método findByID de reservas")
+	public void findByIdTest() {
+		Mockito.when(bookingRepository.findById(5L)).thenReturn(booking5);
+
+		Assertions.assertEquals(booking5, bookingRepository.findById(5L));
+	}
+	
 
 }

@@ -1,6 +1,7 @@
 package com.projectlocus.webservice.services;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,10 +38,18 @@ public class BookingService {
 			obj.setMoment(Instant.now());
 			checkDates(obj);
 			checkAvailability(obj);
+			evaluateBookingPrice(obj);
 			return repository.save(obj);
 		} catch (BookingDateException e) {
 			throw new BookingDateException("Não foi possível inserir a reserva: " + e.getMessage());
 		}
+	}
+
+	public void evaluateBookingPrice(Booking obj) {
+		double bookingDuration = ChronoUnit.HOURS.between(obj.getStartDate(), obj.getEndDate());
+		double bookingPrice = obj.getSpace().getHourlyReservationPrice() * bookingDuration
+				+ obj.getSpace().getCleaningPrice();
+		obj.setBookingPrice(bookingPrice);
 	}
 
 	public void checkDates(Booking obj) {
@@ -55,10 +64,12 @@ public class BookingService {
 
 	public void checkAvailability(Booking obj) {
 		for (Booking spaceBooking : obj.getSpace().getSpaceBookings()) {
-			if ((spaceBooking.getStartDate().compareTo(obj.getEndDate()) <= 0
-					&& spaceBooking.getStartDate().compareTo(obj.getStartDate()) >= 0)
-					|| (spaceBooking.getEndDate().compareTo(obj.getEndDate()) <= 0
-							&& spaceBooking.getEndDate().compareTo(obj.getStartDate()) >= 0)) {
+			int cleaningTime = spaceBooking.getSpace().getCleaningTime();
+			if ((obj.getEndDate().compareTo(spaceBooking.getEndDate().plus(cleaningTime, ChronoUnit.MINUTES)) <= 0
+					&& obj.getEndDate().compareTo(spaceBooking.getStartDate()) >= 0)
+					|| (obj.getStartDate()
+							.compareTo(spaceBooking.getEndDate().plus(cleaningTime, ChronoUnit.MINUTES)) <= 0
+							&& obj.getStartDate().compareTo(spaceBooking.getStartDate()) >= 0)) {
 				throw new BookingDateException("Não há disponibilidade para a data selecionada");
 			}
 		}
