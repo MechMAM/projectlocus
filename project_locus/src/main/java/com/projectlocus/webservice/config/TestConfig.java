@@ -14,6 +14,7 @@ import com.projectlocus.webservice.entities.Space;
 import com.projectlocus.webservice.repositories.BookingRepository;
 import com.projectlocus.webservice.repositories.PersonRepository;
 import com.projectlocus.webservice.repositories.SpaceRepository;
+import com.projectlocus.webservice.services.BookingService;
 
 @Configuration
 @Profile("test")
@@ -27,6 +28,9 @@ public class TestConfig implements CommandLineRunner{
 	
 	@Autowired
 	private BookingRepository bookingRepository;
+	
+	@Autowired
+	private BookingService bookingService;
 
 	@Override
 	public void run(String... args) throws Exception {
@@ -48,6 +52,8 @@ public class TestConfig implements CommandLineRunner{
 		Booking b2 = new Booking(null,Instant.parse("2023-03-25T08:30:00Z"),Instant.parse("2023-03-25T12:30:00Z"),p2,s2);
 		b2.setMoment(Instant.now());
 		
+		bookingService.evaluateBookingPrice(b1);
+		bookingService.evaluateBookingPrice(b2);
 		
 		bookingRepository.saveAll(Arrays.asList(b1,b2));
 		
